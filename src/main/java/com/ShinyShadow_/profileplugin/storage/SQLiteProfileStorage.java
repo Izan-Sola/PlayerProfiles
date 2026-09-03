@@ -17,8 +17,6 @@ public class SQLiteProfileStorage implements ProfileStorage {
     private final String dbFileName;
     private Connection connection;
 
-    // Single-threaded executor: SQLite handles one writer at a time well,
-    // and this keeps all DB access serialized off the main server thread.
     private final Executor dbExecutor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "ProfilePlugin-DB");
         t.setDaemon(true);
@@ -41,14 +39,12 @@ public class SQLiteProfileStorage implements ProfileStorage {
 
             connection = DriverManager.getConnection(url);
             try (Statement stmt = connection.createStatement()) {
-                stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS profiles (
-                        uuid TEXT NOT NULL,
-                        field TEXT NOT NULL,
-                        value TEXT NOT NULL,
-                        PRIMARY KEY (uuid, field)
-                    )
-                    """);
+                stmt.execute("CREATE TABLE IF NOT EXISTS profiles (\n" +
+                        "    uuid TEXT NOT NULL,\n" +
+                        "    field TEXT NOT NULL,\n" +
+                        "    value TEXT NOT NULL,\n" +
+                        "    PRIMARY KEY (uuid, field)\n" +
+                        ")");
             }
             plugin.getLogger().info("SQLite profile storage initialized (" + dbFile.getName() + ").");
         } catch (SQLException e) {
@@ -90,10 +86,8 @@ public class SQLiteProfileStorage implements ProfileStorage {
     @Override
     public CompletableFuture<Void> setField(UUID uuid, String field, String value) {
         return CompletableFuture.runAsync(() -> {
-            String sql = """
-                INSERT INTO profiles (uuid, field, value) VALUES (?, ?, ?)
-                ON CONFLICT(uuid, field) DO UPDATE SET value = excluded.value
-                """;
+            String sql = "INSERT INTO profiles (uuid, field, value) VALUES (?, ?, ?)\n" +
+                    "ON CONFLICT(uuid, field) DO UPDATE SET value = excluded.value";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 ps.setString(1, uuid.toString());
                 ps.setString(2, field);

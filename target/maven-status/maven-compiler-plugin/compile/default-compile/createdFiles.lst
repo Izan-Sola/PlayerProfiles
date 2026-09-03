@@ -1,0 +1,7 @@
+com/ShinyShadow_/profileplugin/config/FieldDefinition$ValidationResult.class
+com/ShinyShadow_/profileplugin/ProfilePlugin.class
+com/ShinyShadow_/profileplugin/config/FieldConfigManager.class
+com/ShinyShadow_/profileplugin/config/FieldDefinition.class
+com/ShinyShadow_/profileplugin/commands/ProfileCommand.class
+com/ShinyShadow_/profileplugin/storage/SQLiteProfileStorage.class
+com/ShinyShadow_/profileplugin/storage/ProfileStorage.class

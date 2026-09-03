@@ -13,7 +13,7 @@ public class ProfilePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig(); // creates config.yml from resources if missing
+        saveDefaultConfig();
 
         this.fieldConfigManager = new FieldConfigManager(this);
         this.fieldConfigManager.load();
@@ -41,7 +41,6 @@ public class ProfilePlugin extends JavaPlugin {
         getLogger().info("ProfilePlugin disabled.");
     }
 
-    /** Reloads config.yml without restarting the server. */
     public void reloadAll() {
         reloadConfig();
         fieldConfigManager.load();
