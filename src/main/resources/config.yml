@@ -1,0 +1,163 @@
+# ProfilePlugin Configuration
+
+# Storage settings
+storage:
+  type: sqlite
+  file: profiles.db
+
+# Maximum number of fields a player can have set
+max-fields-per-profile: 20
+
+# Cooldown between /profile set commands (in seconds)
+set-cooldown-seconds: 2
+
+# Display settings
+display:
+  header: '&6%player%''s Profile'
+  field-line: '&e%field%&7: &f%value%'
+  footer: '&8----'
+  # Order of fields to display (uses the field names from the fields section below)
+  field-order:
+    - name
+    - age
+    - gender
+    - location
+    - timezone
+    - language
+    - discord
+    - github
+    - website
+    - skills
+    - experience
+    - description
+
+# Field definitions - these are hardcoded in the plugin but configurable here
+fields:
+  name:
+    enabled: true
+    max-length: 32
+    multiline: false
+    admin-only: false
+    display-name: 'Display Name'
+    color: '&e'
+
+  age:
+    enabled: true
+    max-length: 3
+    multiline: false
+    admin-only: false
+    allowed-values:
+      - 1-99
+    display-name: 'Age'
+    color: '&b'
+
+  gender:
+    enabled: true
+    max-length: 10
+    multiline: false
+    admin-only: false
+    display-name: 'Gender'
+    color: '&d'
+
+  description:
+    enabled: true
+    max-length: 200
+    multiline: true
+    admin-only: false
+    display-name: 'Description'
+    color: '&7'
+
+  location:
+    enabled: true
+    max-length: 50
+    multiline: false
+    admin-only: false
+    display-name: 'Location'
+    color: '&a'
+
+  discord:
+    enabled: true
+    max-length: 37
+    multiline: false
+    admin-only: false
+    display-name: 'Discord'
+    color: '&5'
+
+  github:
+    enabled: true
+    max-length: 50
+    multiline: false
+    admin-only: false
+    display-name: 'GitHub'
+    color: '&6'
+
+  skills:
+    enabled: true
+    max-length: 100
+    multiline: false
+    admin-only: false
+    allowed-values:
+      - Builder
+      - Redstone
+      - PvP
+      - Parkour
+      - Explorer
+      - Farms
+      - Fishing
+      - Mining
+    display-name: 'Skills'
+    color: '&2'
+
+  experience:
+    enabled: true
+    max-length: 20
+    multiline: false
+    admin-only: true
+    allowed-values:
+      - Beginner
+      - Intermediate
+      - Advanced
+      - Expert
+      - Legendary
+    display-name: 'Experience'
+    color: '&c'
+
+  timezone:
+    enabled: true
+    max-length: 20
+    multiline: false
+    admin-only: false
+    display-name: 'Time Zone'
+    color: '&3'
+
+  language:
+    enabled: true
+    max-length: 20
+    multiline: false
+    admin-only: false
+    display-name: 'Language'
+    color: '&9'
+
+  website:
+    enabled: true
+    max-length: 100
+    multiline: false
+    admin-only: false
+    display-name: 'Website'
+    color: '&1'
+
+# Messages
+messages:
+  no-permission: '&cYou don''t have permission to use this command.'
+  no-permission-others: '&cYou don''t have permission to view/modify other players'' profiles.'
+  field-set: '&aSet %field% to: &f%value%'
+  field-cleared: '&aCleared field: &e%field%'
+  field-invalid: '&cUnknown field: &e%field%'
+  field-admin-only: '&cField %field% is admin-only.'
+  field-disabled: '&cField %field% is currently disabled.'
+  value-too-long: '&cValue is too long! Maximum length: &e%max%'
+  value-not-allowed: '&cThat value is not allowed. Allowed values: &e%allowed%'
+  too-many-fields: '&cYou have reached the maximum of %max% profile fields.'
+  on-cooldown: '&cPlease wait before using /profile set again.'
+  player-not-found: '&cPlayer not found.'
+  no-profile: '&e%player% has no profile set up.'

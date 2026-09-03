@@ -1,0 +1,21 @@
+name: ProfilePlugin
+version: 1.0.0
+main: com.ShinyShadow_.profileplugin.ProfilePlugin
+api-version: 1.13
+description: A simple profile plugin with hardcoded configurable fields.
+
+commands:
+  profile:
+    description: Manage your profile
+    usage: /profile <set|show|clear|fields>
+
+permissions:
+  profileplugin.use:
+    description: Allows using /profile commands
+    default: true
+  profileplugin.view.others:
+    description: Allows viewing other players' profiles
+    default: op
+  profileplugin.admin:
+    description: Admin permissions for profile plugin
+    default: op

@@ -1,0 +1,40 @@
+# ProfilePlugin - per-field overrides
+#
+# Simple fields (age, gender, pronouns, favoritecolor, whatever your players
+# want) do NOT need an entry here - they just use the field-defaults from
+# config.yml automatically. Only add a field here if it needs something
+# special: a longer length, multiline text, or a restricted set of values.
+#
+# Options per field:
+#   max-length:      overrides field-defaults.max-length
+#   multiline:        true/false, allows the value to contain \n via the
+#                      "|" set syntax (see command usage below)
+#   allowed-values:    list - if present, the value MUST be one of these
+#                      (case-insensitive). Omit for free text.
+#   admin-only:        true = only staff (profileplugin.admin) can set this
+#                      field, e.g. for a "verified" or "title" tag field.
+
+fields:
+
+  description:
+    max-length: 200
+    multiline: true
+
+  bio:
+    max-length: 200
+    multiline: true
+
+  # Example of a restricted-value field. Delete this block if you don't
+  # want gender locked to a preset list - without it, gender just falls
+  # back to field-defaults (free text, 32 chars).
+  # gender:
+  #   allowed-values:
+  #     - male
+  #     - female
+  #     - other
+  #     - prefer not to say
+
+  # Example admin-only field, e.g. for staff-assigned titles/tags.
+  # title:
+  #   max-length: 24
+  #   admin-only: true
