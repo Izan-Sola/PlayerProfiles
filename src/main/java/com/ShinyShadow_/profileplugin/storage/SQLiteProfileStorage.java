@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +43,7 @@ public class SQLiteProfileStorage implements ProfileStorage {
                         "    uuid TEXT NOT NULL,\n" +
                         "    field TEXT NOT NULL,\n" +
                         "    value TEXT NOT NULL,\n" +
+                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
                         "    PRIMARY KEY (uuid, field)\n" +
                         ")");
             }
@@ -67,8 +68,10 @@ public class SQLiteProfileStorage implements ProfileStorage {
     @Override
     public CompletableFuture<Map<String, String>> getProfile(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            Map<String, String> fields = new HashMap<>();
-            String sql = "SELECT field, value FROM profiles WHERE uuid = ?";
+            // Use LinkedHashMap to preserve insertion order
+            Map<String, String> fields = new LinkedHashMap<>();
+            // Order by created_at to get fields in the order they were set
+            String sql = "SELECT field, value FROM profiles WHERE uuid = ? ORDER BY created_at ASC";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 ps.setString(1, uuid.toString());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -86,12 +89,40 @@ public class SQLiteProfileStorage implements ProfileStorage {
     @Override
     public CompletableFuture<Void> setField(UUID uuid, String field, String value) {
         return CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO profiles (uuid, field, value) VALUES (?, ?, ?)\n" +
-                    "ON CONFLICT(uuid, field) DO UPDATE SET value = excluded.value";
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            // First check if the field exists
+            String checkSql = "SELECT COUNT(*) FROM profiles WHERE uuid = ? AND field = ?";
+            boolean exists = false;
+            try (PreparedStatement ps = connection.prepareStatement(checkSql)) {
                 ps.setString(1, uuid.toString());
                 ps.setString(2, field);
-                ps.setString(3, value);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        exists = rs.getInt(1) > 0;
+                    }
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to check field existence: " + e.getMessage());
+            }
+
+            String sql;
+            if (exists) {
+                // Update existing field - keep the original created_at
+                sql = "UPDATE profiles SET value = ? WHERE uuid = ? AND field = ?";
+            } else {
+                // Insert new field with current timestamp
+                sql = "INSERT INTO profiles (uuid, field, value, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                if (exists) {
+                    ps.setString(1, value);
+                    ps.setString(2, uuid.toString());
+                    ps.setString(3, field);
+                } else {
+                    ps.setString(1, uuid.toString());
+                    ps.setString(2, field);
+                    ps.setString(3, value);
+                }
                 ps.executeUpdate();
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to set field '" + field + "' for " + uuid + ": " + e.getMessage());

@@ -13,7 +13,7 @@ set-cooldown-seconds: 2
 
 # Display settings
 display:
-  header: '&6%player%''s Profile\n'
+  header: '&6%player%''s Profile'
   field-line: '&e%field%&7: &f%value%'
   footer: '&8----'
 
