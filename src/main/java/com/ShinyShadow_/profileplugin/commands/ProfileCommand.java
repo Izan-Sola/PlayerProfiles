@@ -49,6 +49,87 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         this.fieldConfigManager = fieldConfigManager;
     }
 
+    private String lang(String key) {
+        String lang = plugin.getConfig().getString("language", "en");
+        Map<String, String> messages = new HashMap<>();
+
+        // English messages
+        messages.put("only-players", "&cOnly players can set their own profile.");
+        messages.put("no-permission", "&cYou don't have permission to use this command.");
+        messages.put("usage-set", "&cUsage: /profile set <field> <value>");
+        messages.put("field-invalid", "&cUnknown field: &e%field%");
+        messages.put("available-fields", "&7Available fields: &e%fields%");
+        messages.put("field-admin-only", "&cField %field% is admin-only.");
+        messages.put("field-disabled", "&cField %field% is currently disabled.");
+        messages.put("value-too-long", "&cValue is too long! Maximum length: &e%max%");
+        messages.put("value-not-allowed", "&cThat value is not allowed. Allowed values: &e%allowed%");
+        messages.put("field-set", "&aSet %field% to: &f%value%");
+        messages.put("too-many-fields", "&cYou have reached the maximum of %max% profile fields.");
+        messages.put("on-cooldown", "&cPlease wait before using /profile set again.");
+        messages.put("no-permission-others", "&cYou don't have permission to view/modify other players' profiles.");
+        messages.put("player-not-found", "&cPlayer not found.");
+        messages.put("no-profile", "&e%player% has no profile set up.");
+        messages.put("profile-cleared", "&aYour entire profile has been cleared.");
+        messages.put("field-not-set", "&cField %field% is not set on your profile.");
+        messages.put("field-unset", "&aRemoved field: &e%field%");
+        messages.put("unset-usage", "&cUsage: /profile unset <field>");
+        messages.put("only-players-unset", "&cOnly players can unset their own profile fields.");
+        messages.put("clear-confirm", "&c⚠️ Are you sure you want to clear your entire profile?");
+        messages.put("clear-confirm-type", "&eType &f/profile clear confirm&e to confirm.");
+        messages.put("clear-admin-confirm", "&c⚠️ Are you sure you want to clear %player%'s entire profile?");
+        messages.put("clear-admin-type", "&eType &f/profile clear %player% confirm&e to confirm.");
+        messages.put("clear-success", "&aCleared %player%'s entire profile.");
+        messages.put("clear-redirect", "&cTo remove a specific field, use: &e/profile unset %field%");
+        messages.put("clear-redirect-clear", "&eTo clear your entire profile, use: &e/profile clear");
+        messages.put("url-invalid", "&cInvalid URL for %platform%: %error%");
+        messages.put("url-empty", "&cURL cannot be empty for %platform%!");
+        messages.put("url-must-start", "&c%platform% URL must start with https:// or http://");
+        messages.put("url-wrong-domain", "&c%platform% URL must contain '%domain%' (e.g., https://www.%domain%/username)");
+        messages.put("url-has-spaces", "&cURL cannot contain spaces!");
+        messages.put("url-invalid-format", "&cInvalid URL format for %platform%!");
+
+        // Spanish messages
+        messages.put("only-players-es", "&cSolo los jugadores pueden establecer su propio perfil.");
+        messages.put("no-permission-es", "&cNo tienes permiso para usar este comando.");
+        messages.put("usage-set-es", "&cUso: /profile set <campo> <valor>");
+        messages.put("field-invalid-es", "&cCampo desconocido: &e%field%");
+        messages.put("available-fields-es", "&7Campos disponibles: &e%fields%");
+        messages.put("field-admin-only-es", "&cEl campo %field% es solo para administradores.");
+        messages.put("field-disabled-es", "&cEl campo %field% está actualmente desactivado.");
+        messages.put("value-too-long-es", "&c¡El valor es demasiado largo! Longitud máxima: &e%max%");
+        messages.put("value-not-allowed-es", "&cEse valor no está permitido. Valores permitidos: &e%allowed%");
+        messages.put("field-set-es", "&aEstablecido %field% a: &f%value%");
+        messages.put("too-many-fields-es", "&cHas alcanzado el máximo de %max% campos en tu perfil.");
+        messages.put("on-cooldown-es", "&cEspera antes de usar /profile set de nuevo.");
+        messages.put("no-permission-others-es", "&cNo tienes permiso para ver/modificar los perfiles de otros jugadores.");
+        messages.put("player-not-found-es", "&cJugador no encontrado.");
+        messages.put("no-profile-es", "&e%player% no tiene un perfil configurado.");
+        messages.put("profile-cleared-es", "&aTu perfil completo ha sido eliminado.");
+        messages.put("field-not-set-es", "&cEl campo %field% no está establecido en tu perfil.");
+        messages.put("field-unset-es", "&aCampo eliminado: &e%field%");
+        messages.put("unset-usage-es", "&cUso: /profile unset <campo>");
+        messages.put("only-players-unset-es", "&cSolo los jugadores pueden eliminar sus propios campos de perfil.");
+        messages.put("clear-confirm-es", "&c⚠️ ¿Estás seguro de que quieres eliminar todo tu perfil?");
+        messages.put("clear-confirm-type-es", "&eEscribe &f/profile clear confirm&e para confirmar.");
+        messages.put("clear-admin-confirm-es", "&c⚠️ ¿Estás seguro de que quieres eliminar el perfil de %player%?");
+        messages.put("clear-admin-type-es", "&eEscribe &f/profile clear %player% confirm&e para confirmar.");
+        messages.put("clear-success-es", "&aPerfil de %player% eliminado por completo.");
+        messages.put("clear-redirect-es", "&cPara eliminar un campo específico, usa: &e/profile unset %field%");
+        messages.put("clear-redirect-clear-es", "&ePara eliminar todo tu perfil, usa: &e/profile clear");
+        messages.put("url-invalid-es", "&cURL inválida para %platform%: %error%");
+        messages.put("url-empty-es", "&c¡La URL no puede estar vacía para %platform%!");
+        messages.put("url-must-start-es", "&cLa URL de %platform% debe comenzar con https:// o http://");
+        messages.put("url-wrong-domain-es", "&cLa URL de %platform% debe contener '%domain%' (ej: https://www.%domain%/usuario)");
+        messages.put("url-has-spaces-es", "&c¡La URL no puede contener espacios!");
+        messages.put("url-invalid-format-es", "&cFormato de URL inválido para %platform%!");
+
+        String keyWithLang = key + "-" + lang;
+        if (messages.containsKey(keyWithLang)) {
+            return messages.get(keyWithLang);
+        }
+        return messages.getOrDefault(key, key);
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
@@ -82,16 +163,16 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
     private void handleSet(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can set their own profile.");
+            sender.sendMessage(color(lang("only-players")));
             return;
         }
         Player player = (Player) sender;
         if (!player.hasPermission("profileplugin.use")) {
-            sender.sendMessage(msg("no-permission"));
+            sender.sendMessage(color(lang("no-permission")));
             return;
         }
         if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED + "Usage: /profile set <field> <value>");
+            sender.sendMessage(color(lang("usage-set")));
             return;
         }
 
@@ -101,7 +182,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             Long last = lastSetTime.get(player.getUniqueId());
             long lastTime = last == null ? 0L : last;
             if (now - lastTime < cooldown * 1000L) {
-                sender.sendMessage(msg("on-cooldown"));
+                sender.sendMessage(color(lang("on-cooldown")));
                 return;
             }
         }
@@ -111,16 +192,16 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
         FieldDefinition def = fieldConfigManager.getField(field);
         if (def == null) {
-            sender.sendMessage(msg("field-invalid").replace("%field%", field));
-            sender.sendMessage(ChatColor.GRAY + "Available fields: " + String.join(", ", fieldConfigManager.getEnabledFieldNames()));
+            sender.sendMessage(color(lang("field-invalid").replace("%field%", field)));
+            sender.sendMessage(color(lang("available-fields").replace("%fields%", String.join(", ", fieldConfigManager.getEnabledFieldNames()))));
             return;
         }
         if (def.isAdminOnly() && !player.hasPermission("profileplugin.admin")) {
-            sender.sendMessage(msg("field-admin-only").replace("%field%", field));
+            sender.sendMessage(color(lang("field-admin-only").replace("%field%", field)));
             return;
         }
         if (!def.isEnabled()) {
-            sender.sendMessage(msg("field-disabled").replace("%field%", field));
+            sender.sendMessage(color(lang("field-disabled").replace("%field%", field)));
             return;
         }
 
@@ -139,10 +220,10 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         FieldDefinition.ValidationResult result = def.validate(value);
         if (!result.valid) {
             if ("too_long".equals(result.reason)) {
-                sender.sendMessage(msg("value-too-long").replace("%max%", String.valueOf(result.maxLength)));
+                sender.sendMessage(color(lang("value-too-long").replace("%max%", String.valueOf(result.maxLength))));
             } else {
-                sender.sendMessage(msg("value-not-allowed")
-                        .replace("%allowed%", String.join(", ", result.allowedValues)));
+                sender.sendMessage(color(lang("value-not-allowed")
+                        .replace("%allowed%", String.join(", ", result.allowedValues))));
             }
             return;
         }
@@ -152,29 +233,29 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             int maxFields = fieldConfigManager.getMaxFieldsPerProfile();
             if (isNewField && existingFields.size() >= maxFields) {
                 Bukkit.getScheduler().runTask(plugin, () ->
-                        sender.sendMessage(msg("too-many-fields").replace("%max%", String.valueOf(maxFields))));
+                        sender.sendMessage(color(lang("too-many-fields").replace("%max%", String.valueOf(maxFields)))));
                 return;
             }
 
             storage.setField(player.getUniqueId(), field, value).thenRun(() ->
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         lastSetTime.put(player.getUniqueId(), System.currentTimeMillis());
-                        sender.sendMessage(msg("field-set")
+                        sender.sendMessage(color(lang("field-set")
                                 .replace("%field%", field)
-                                .replace("%value%", value.replace("\n", " / ")));
+                                .replace("%value%", value.replace("\n", " / "))));
                     }));
         });
     }
 
     private String validateSocialUrl(String platform, String url) {
         if (url == null || url.trim().isEmpty()) {
-            return "URL cannot be empty for " + platform + "!";
+            return color(lang("url-empty").replace("%platform%", platform));
         }
 
         url = url.trim();
 
         if (!url.startsWith("https://") && !url.startsWith("http://")) {
-            return platform + " URL must start with https:// or http://";
+            return color(lang("url-must-start").replace("%platform%", platform));
         }
 
         String expectedDomain = URL_PATTERNS.get(platform);
@@ -184,15 +265,17 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
         String urlLower = url.toLowerCase();
         if (!urlLower.contains(expectedDomain)) {
-            return platform + " URL must contain '" + expectedDomain + "' (e.g., https://www." + expectedDomain + "/username)";
+            return color(lang("url-wrong-domain")
+                    .replace("%platform%", platform)
+                    .replace("%domain%", expectedDomain));
         }
 
         if (url.contains(" ")) {
-            return "URL cannot contain spaces!";
+            return color(lang("url-has-spaces"));
         }
 
         if (!url.contains(".")) {
-            return "Invalid URL format for " + platform + "!";
+            return color(lang("url-invalid-format").replace("%platform%", platform));
         }
 
         return null;
@@ -203,13 +286,13 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
         if (args.length >= 2 && !targetName.equalsIgnoreCase(sender.getName())
                 && !sender.hasPermission("profileplugin.view.others")) {
-            sender.sendMessage(msg("no-permission-others"));
+            sender.sendMessage(color(lang("no-permission-others")));
             return;
         }
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
         if (!target.hasPlayedBefore() && !target.isOnline()) {
-            sender.sendMessage(msg("player-not-found"));
+            sender.sendMessage(color(lang("player-not-found")));
             return;
         }
 
@@ -219,15 +302,13 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
     private void sendFormattedProfile(CommandSender sender, String playerName, Map<String, String> fields) {
         if (fields.isEmpty()) {
-            sender.sendMessage(msg("no-profile").replace("%player%", playerName));
+            sender.sendMessage(color(lang("no-profile").replace("%player%", playerName)));
             return;
         }
 
-        // Get config values with proper methods
         String header = plugin.getConfig().getString("display.header", "&6%player%'s Profile")
                 .replace("%player%", playerName);
 
-        // Handle \n in header for breaklines
         if (header.contains("\\n")) {
             for (String line : header.split("\\\\n")) {
                 sender.sendMessage(color(line));
@@ -296,6 +377,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         String footer = plugin.getConfig().getString("display.footer", "&8----");
         sender.sendMessage(" " + color(footer));
     }
+
     private boolean isValidSocialUrl(String platform, String url) {
         if (url == null || url.trim().isEmpty()) return false;
         url = url.trim();
@@ -304,16 +386,16 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
     private void handleUnset(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can unset their own profile fields.");
+            sender.sendMessage(color(lang("only-players-unset")));
             return;
         }
         Player player = (Player) sender;
         if (!player.hasPermission("profileplugin.use")) {
-            sender.sendMessage(msg("no-permission"));
+            sender.sendMessage(color(lang("no-permission")));
             return;
         }
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "Usage: /profile unset <field>");
+            sender.sendMessage(color(lang("unset-usage")));
             return;
         }
 
@@ -321,47 +403,47 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
         FieldDefinition def = fieldConfigManager.getField(field);
         if (def == null) {
-            sender.sendMessage(msg("field-invalid").replace("%field%", field));
-            sender.sendMessage(ChatColor.GRAY + "Available fields: " + String.join(", ", fieldConfigManager.getEnabledFieldNames()));
+            sender.sendMessage(color(lang("field-invalid").replace("%field%", field)));
+            sender.sendMessage(color(lang("available-fields").replace("%fields%", String.join(", ", fieldConfigManager.getEnabledFieldNames()))));
             return;
         }
         if (!def.isEnabled()) {
-            sender.sendMessage(msg("field-disabled").replace("%field%", field));
+            sender.sendMessage(color(lang("field-disabled").replace("%field%", field)));
             return;
         }
 
         storage.getProfile(player.getUniqueId()).thenAccept(existingFields -> {
             if (!existingFields.containsKey(field)) {
                 Bukkit.getScheduler().runTask(plugin, () ->
-                        sender.sendMessage(msg("field-not-set").replace("%field%", field)));
+                        sender.sendMessage(color(lang("field-not-set").replace("%field%", field))));
                 return;
             }
 
             storage.clearField(player.getUniqueId(), field).thenRun(() ->
                     Bukkit.getScheduler().runTask(plugin, () ->
-                            sender.sendMessage(msg("field-unset").replace("%field%", field))));
+                            sender.sendMessage(color(lang("field-unset").replace("%field%", field)))));
         });
     }
 
     private void handleClear(CommandSender sender, String[] args) {
-        if (args.length >= 2) {
+        if (args.length >= 2 && !args[1].equalsIgnoreCase("confirm")) {
             if (!sender.hasPermission("profileplugin.admin")) {
-                sender.sendMessage(msg("no-permission"));
+                sender.sendMessage(color(lang("no-permission")));
                 return;
             }
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
             if (!target.hasPlayedBefore() && !target.isOnline()) {
-                sender.sendMessage(msg("player-not-found"));
+                sender.sendMessage(color(lang("player-not-found")));
                 return;
             }
 
             if (args.length >= 3 && args[2].equalsIgnoreCase("confirm")) {
                 storage.clearProfile(target.getUniqueId()).thenRun(() ->
                         Bukkit.getScheduler().runTask(plugin, () ->
-                                sender.sendMessage(ChatColor.GREEN + "Cleared " + target.getName() + "'s entire profile.")));
+                                sender.sendMessage(color(lang("clear-success").replace("%player%", target.getName())))));
             } else {
-                sender.sendMessage(ChatColor.RED + "⚠️ Are you sure you want to clear " + target.getName() + "'s entire profile?");
-                sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.WHITE + "/profile clear " + target.getName() + " confirm" + ChatColor.YELLOW + " to confirm.");
+                sender.sendMessage(color(lang("clear-admin-confirm").replace("%player%", args[1])));
+                sender.sendMessage(color(lang("clear-admin-type").replace("%player%", args[1])));
             }
             return;
         }
@@ -372,25 +454,25 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         }
         Player player = (Player) sender;
         if (!player.hasPermission("profileplugin.use")) {
-            sender.sendMessage(msg("no-permission"));
+            sender.sendMessage(color(lang("no-permission")));
             return;
         }
 
-        if (args.length == 2 && args[1].equalsIgnoreCase("confirm")) {
+        if (args.length >= 2 && args[1].equalsIgnoreCase("confirm")) {
             storage.clearProfile(player.getUniqueId()).thenRun(() ->
                     Bukkit.getScheduler().runTask(plugin, () ->
-                            sender.sendMessage(msg("profile-cleared"))));
+                            sender.sendMessage(color(lang("profile-cleared")))));
             return;
         }
 
-        sender.sendMessage(ChatColor.RED + "⚠️ Are you sure you want to clear your entire profile?");
-        sender.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.WHITE + "/profile clear confirm" + ChatColor.YELLOW + " to confirm.");
+        sender.sendMessage(color(lang("clear-confirm")));
+        sender.sendMessage(color(lang("clear-confirm-type")));
     }
 
     private void handleFields(CommandSender sender) {
-        sender.sendMessage(ChatColor.GRAY + "💡 Fields appear in the order you set them.");
-        sender.sendMessage(ChatColor.GRAY + "   Use " + ChatColor.YELLOW + "/profile unset <field>" + ChatColor.GRAY + " to remove a field.");
-        sender.sendMessage(ChatColor.GRAY + "   Use " + ChatColor.YELLOW + "/profile clear" + ChatColor.GRAY + " to remove all fields.");
+        sender.sendMessage(ChatColor.GRAY + "💡 " + color("&7Fields appear in the order you set them."));
+        sender.sendMessage(ChatColor.GRAY + "   " + color("&e/profile unset <field>") + " &7- " + color("&7remove a field"));
+        sender.sendMessage(ChatColor.GRAY + "   " + color("&e/profile clear") + " &7- " + color("&7remove all fields"));
         sender.sendMessage(ChatColor.GRAY + "─────────────────────");
 
         sender.sendMessage(ChatColor.GOLD + "Available Profile Fields:");
@@ -423,15 +505,11 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
     private void sendUsage(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "--- ProfilePlugin ---");
-        sender.sendMessage(ChatColor.YELLOW + "/profile set <field> <value>" + ChatColor.GRAY + " - set a field on your profile");
-        sender.sendMessage(ChatColor.YELLOW + "/profile unset <field>" + ChatColor.GRAY + " - remove a field from your profile");
-        sender.sendMessage(ChatColor.YELLOW + "/profile clear" + ChatColor.GRAY + " - clear your entire profile");
-        sender.sendMessage(ChatColor.YELLOW + "/profile show [player]" + ChatColor.GRAY + " - view a profile (yours by default)");
-        sender.sendMessage(ChatColor.YELLOW + "/profile fields" + ChatColor.GRAY + " - list available fields");
-    }
-
-    private String msg(String key) {
-        return color(plugin.getConfig().getString("messages." + key, key));
+        sender.sendMessage(ChatColor.YELLOW + "/profile set <field> <value>" + ChatColor.GRAY + " - set a field");
+        sender.sendMessage(ChatColor.YELLOW + "/profile unset <field>" + ChatColor.GRAY + " - remove a field");
+        sender.sendMessage(ChatColor.YELLOW + "/profile clear" + ChatColor.GRAY + " - clear profile");
+        sender.sendMessage(ChatColor.YELLOW + "/profile show [player]" + ChatColor.GRAY + " - view profile");
+        sender.sendMessage(ChatColor.YELLOW + "/profile fields" + ChatColor.GRAY + " - list fields");
     }
 
     private String color(String s) {

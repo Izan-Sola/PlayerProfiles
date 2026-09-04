@@ -1,3 +1,6 @@
+# Language: en or es
+language: en
+
 # ProfilePlugin Configuration
 
 # Storage settings
@@ -168,7 +171,7 @@ fields:
     display-name: 'Language'
     color: '&9'
 
-# Messages
+# Messages (these can still be customized per language)
 messages:
   no-permission: '&cYou don''t have permission to use this command.'
   no-permission-others: '&cYou don''t have permission to view/modify other players'' profiles.'
