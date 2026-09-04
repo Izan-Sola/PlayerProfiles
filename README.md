@@ -1,5 +1,5 @@
 Configurable profiles for your users! 1.13 and above!
-Only supports english for now.
+Only supports spanish and english for now.
 And please let me know if you find any errors or issues!
 
 <img width="927" height="433" alt="image" src="https://github.com/user-attachments/assets/63fd26a8-bcf5-46d6-8988-458fb5138d3c" />
