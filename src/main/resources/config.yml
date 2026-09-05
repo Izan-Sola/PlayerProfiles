@@ -1,7 +1,13 @@
 # Language: en or es
 language: en
 
-# ProfilePlugin Configuration
+
+# These words will be blocked even if between other letters (aaafuckaaa)
+# The filter is case-insensitive!
+# If any filtered word is detected, the entire set command is blocked!
+# You can add as many as you want!
+filtered-words:
+  - fuck
 
 # Storage settings
 storage:
@@ -9,7 +15,7 @@ storage:
   file: profiles.db
 
 # Maximum number of fields a player can have set
-max-fields-per-profile: 20
+max-fields-per-profile: 10
 
 # Cooldown between /profile set commands (in seconds)
 set-cooldown-seconds: 2
@@ -20,7 +26,7 @@ display:
   field-line: '&e%field%&7: &f%value%'
   footer: '&8----'
 
-# Field definitions - these are hardcoded in the plugin but configurable here
+# Field definitions
 fields:
   name:
     enabled: true
@@ -67,7 +73,6 @@ fields:
     display-name: 'Discord'
     color: '&5'
 
-  # Social Media Fields (appear in Links section)
   github:
     enabled: true
     max-length: 100
@@ -171,7 +176,7 @@ fields:
     display-name: 'Language'
     color: '&9'
 
-# Messages (these can still be customized per language)
+# Messages
 messages:
   no-permission: '&cYou don''t have permission to use this command.'
   no-permission-others: '&cYou don''t have permission to view/modify other players'' profiles.'

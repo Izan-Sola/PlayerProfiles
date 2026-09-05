@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ProfileCommand implements CommandExecutor, TabCompleter {
@@ -43,10 +44,44 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         URL_PATTERNS.put("reddit", "reddit.com");
     }
 
+    private List<String> filteredWords = new ArrayList<>();
+
     public ProfileCommand(JavaPlugin plugin, ProfileStorage storage, FieldConfigManager fieldConfigManager) {
         this.plugin = plugin;
         this.storage = storage;
         this.fieldConfigManager = fieldConfigManager;
+        loadFilteredWords();
+    }
+
+    private void loadFilteredWords() {
+        filteredWords = plugin.getConfig().getStringList("filtered-words");
+    }
+
+    private boolean containsFilteredWord(String text) {
+        if (text == null || filteredWords.isEmpty()) {
+            return false;
+        }
+
+        for (String word : filteredWords) {
+            if (word == null || word.isEmpty()) continue;
+            String pattern = buildFilterPattern(word);
+            if (text.matches("(?i).*" + pattern + ".*")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String buildFilterPattern(String word) {
+        StringBuilder pattern = new StringBuilder();
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            if (i > 0) {
+                pattern.append(".*?");
+            }
+            pattern.append(Pattern.quote(String.valueOf(c)));
+        }
+        return pattern.toString();
     }
 
     private String lang(String key) {
@@ -87,6 +122,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         messages.put("url-wrong-domain", "&c%platform% URL must contain '%domain%' (e.g., https://www.%domain%/username)");
         messages.put("url-has-spaces", "&cURL cannot contain spaces!");
         messages.put("url-invalid-format", "&cInvalid URL format for %platform%!");
+        messages.put("filtered-word", "&cYour message contains filtered language.");
 
         // Spanish messages
         messages.put("only-players-es", "&cSolo los jugadores pueden establecer su propio perfil.");
@@ -122,6 +158,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         messages.put("url-wrong-domain-es", "&cLa URL de %platform% debe contener '%domain%' (ej: https://www.%domain%/usuario)");
         messages.put("url-has-spaces-es", "&c¡La URL no puede contener espacios!");
         messages.put("url-invalid-format-es", "&cFormato de URL inválido para %platform%!");
+        messages.put("filtered-word-es", "&cTu mensaje contiene lenguaje filtrado.");
 
         String keyWithLang = key + "-" + lang;
         if (messages.containsKey(keyWithLang)) {
@@ -208,6 +245,12 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         String value = def.isMultiline()
                 ? rawValue.replace(" | ", "\n").replace("|", "\n")
                 : rawValue;
+
+        // Check for filtered words - BLOCK if any found
+        if (containsFilteredWord(value)) {
+            sender.sendMessage(color(lang("filtered-word")));
+            return;
+        }
 
         if (SOCIAL_FIELDS.contains(field)) {
             String validationError = validateSocialUrl(field, value);
